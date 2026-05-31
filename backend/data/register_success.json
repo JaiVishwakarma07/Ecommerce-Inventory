@@ -1,0 +1,1 @@
+{"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzc5ODM5NDAyLCJleHAiOjE3Nzk5MjU4MDJ9.e-D3NbaEaAQyVbx3NjQ_ENzSlmjxahGljz6P5ZOLjus","token_type":"bearer","user":{"id":2,"email":"postman-new@example.com","full_name":"Postman New","role":"customer","created_at":"2026-05-26T23:50:02.567027"}}

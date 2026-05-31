@@ -1,0 +1,49 @@
+---
+description: "Project-specific FastAPI conventions"
+alwaysApply: true
+---
+
+## Project Structure
+backend/
+├── app/
+│   ├── main.py              # FastAPI app factory
+│   ├── config.py            # Settings via pydantic-settings
+│   ├── database.py          # Async SQLAlchemy engine + session
+│   ├── routers/             # APIRouter modules (one per domain)
+│   ├── services/            # Business logic, no DB access
+│   ├── repositories/        # DB access only, no business logic
+│   ├── models/              # SQLAlchemy ORM models
+│   ├── schemas/             # Pydantic request/response models
+│   ├── middleware/          # Auth, logging, rate limiting
+│   └── dependencies/        # FastAPI Depends() functions
+tests/
+├── conftest.py              # Fixtures: async client, test DB
+├── test_routers/            # Integration tests (hit actual endpoints)
+└── test_services/           # Unit tests (mock repositories)
+
+## Coding Rules
+- Every endpoint MUST have a response_model declared
+- Use async def everywhere — no sync functions that touch DB or I/O
+- Repositories return domain objects, never SQLAlchemy row objects directly
+- Services call only repositories, never SQLAlchemy directly
+- Use structlog.get_logger() — never print(), never logging.info()
+- All secrets via environment variables — never hardcode credentials
+- Passwords are NEVER returned in any response, ever
+
+## Testing Rules
+- Write the test file FIRST, then the implementation
+- Use pytest-asyncio with @pytest.mark.asyncio
+- Use httpx.AsyncClient with app transport for integration tests
+- Minimum coverage: 70% overall, 100% on auth endpoints
+- Every test must be independent — no shared state between tests
+
+## Error Handling
+- Use HTTPException with explicit status codes
+- 400: bad input  401: unauthenticated  403: unauthorized
+- 404: not found  409: conflict  422: validation (Pydantic auto)
+- 500: never expose internal error details to clients
+
+## FastAPI Conventions
+- Organize routers with prefix and tags
+- Use Depends() for auth, DB sessions, and pagination
+- Version all routes: /api/v1/

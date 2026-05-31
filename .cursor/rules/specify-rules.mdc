@@ -1,0 +1,14 @@
+---
+alwaysApply: true
+---
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read `specs/003-orders-checkout/plan.md`
+
+Project convention for all upcoming features:
+- Store feature artifacts under `specs/<feature-name>/`
+- Keep `spec.md` and `plan.md` together in the same feature folder
+- Keep research/data-model/quickstart in the feature folder (`research.md`, `data-model.md`, `quickstart.md`)
+- Place contracts in `specs/<feature-name>/contracts/`
+<!-- SPECKIT END -->

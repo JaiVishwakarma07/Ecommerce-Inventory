@@ -1,0 +1,25 @@
+# ECOM_OPPO API — runtime dependencies
+# Install: python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+# Dev/test: pip install -r requirements-dev.txt
+
+fastapi==0.136.3
+uvicorn[standard]==0.48.0
+
+# Database
+SQLAlchemy==2.0.50
+aiosqlite==0.22.1
+asyncpg==0.30.0
+alembic==1.18.4
+
+# Config & validation
+pydantic-settings==2.14.1
+email-validator==2.3.0
+python-dotenv==1.2.2
+
+# Auth (passlib 1.7.4 requires bcrypt <4.1)
+python-jose[cryptography]==3.5.0
+passlib[bcrypt]==1.7.4
+bcrypt==3.2.2
+
+# Logging
+structlog==25.5.0
