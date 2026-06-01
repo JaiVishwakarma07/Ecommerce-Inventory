@@ -1,0 +1,154 @@
+openapi: 3.1.0
+info:
+  title: ECOM_OPPO AI Shopping Assistant API
+  version: 1.0.0
+  description: Customer natural-language product discovery assistant. Products in responses MUST originate from catalog database queries only.
+servers:
+  - url: https://api.example.com
+security:
+  - bearerAuth: []
+paths:
+  /assistant/query:
+    post:
+      summary: Submit a natural-language shopping query
+      tags: [assistant]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssistantQueryRequest"
+            example:
+              query: laptop under 10000
+      responses:
+        "200":
+          description: Assistant answer with grounded catalog products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssistantQueryResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetail"
+              example:
+                detail: Rate limit exceeded
+        "503":
+          description: Assistant language service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetail"
+              example:
+                detail: Assistant temporarily unavailable
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    AssistantQueryRequest:
+      type: object
+      required: [query]
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 500
+          example: laptop under 10000
+
+    Product:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - sku
+        - price
+        - quantity
+        - category
+        - image_url
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        sku:
+          type: string
+        price:
+          type: number
+        quantity:
+          type: integer
+          minimum: 0
+        category:
+          type: string
+        image_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    AssistantQueryResponse:
+      type: object
+      required: [answer, products]
+      properties:
+        answer:
+          type: string
+        products:
+          type: array
+          maxItems: 5
+          items:
+            $ref: "#/components/schemas/Product"
+
+    ErrorDetail:
+      type: object
+      required: [detail]
+      properties:
+        detail:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: object
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDetail"
+          example:
+            detail: Not authenticated
+    Forbidden:
+      description: Authenticated user is not a customer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDetail"
+          example:
+            detail: Forbidden
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDetail"

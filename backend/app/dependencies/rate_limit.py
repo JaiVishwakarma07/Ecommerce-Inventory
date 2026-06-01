@@ -41,6 +41,11 @@ login_rate_limiter = InMemoryRateLimiter(
     window_seconds=60,
     detail="Too many login attempts",
 )
+assistant_rate_limiter = InMemoryRateLimiter(
+    max_requests=10,
+    window_seconds=60,
+    detail="Rate limit exceeded",
+)
 
 
 def _get_client_ip(request: Request) -> str:
@@ -60,3 +65,7 @@ def enforce_register_rate_limit(request: Request) -> None:
 def enforce_login_rate_limit(request: Request) -> None:
     client_host = _get_client_ip(request)
     login_rate_limiter.check(client_host)
+
+
+def enforce_assistant_rate_limit(user_id: int) -> None:
+    assistant_rate_limiter.check(str(user_id))

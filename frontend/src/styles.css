@@ -603,6 +603,27 @@ hr {
   font-size: 0.9rem;
 }
 
+.assistant-bar {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.assistant-bar .search {
+  flex: 1;
+  min-width: 200px;
+}
+
+.assistant-answer {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface-2, #f4f6f8);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
 @media (max-width: 800px) {
   .navbar-inner {
     flex-wrap: wrap;

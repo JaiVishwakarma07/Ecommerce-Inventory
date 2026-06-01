@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.product import Product
+from app.schemas.assistant import AssistantSearchFilters
 
 
 class DuplicateSkuError(Exception):
@@ -36,6 +37,45 @@ class ProductRepository:
         if limit is not None:
             capped_limit = min(limit, 100)
             query = query.limit(capped_limit)
+
+        result = await db.execute(query)
+        return list(result.scalars().all())
+
+    async def search_for_assistant(
+        self,
+        db: AsyncSession,
+        *,
+        filters: AssistantSearchFilters,
+        limit: int = 5,
+    ) -> list[Product]:
+        capped_limit = min(limit, 5)
+        query = select(Product)
+
+        normalized_search = (filters.search or "").strip()
+        if normalized_search:
+            pattern = f"%{normalized_search.lower()}%"
+            query = query.where(
+                or_(
+                    func.lower(Product.name).like(pattern),
+                    func.lower(Product.sku).like(pattern),
+                    func.lower(Product.description).like(pattern),
+                )
+            )
+
+        if filters.category:
+            category_pattern = f"%{filters.category.strip().lower()}%"
+            query = query.where(func.lower(Product.category).like(category_pattern))
+
+        if filters.max_price is not None:
+            query = query.where(Product.price <= filters.max_price)
+
+        if filters.min_price is not None:
+            query = query.where(Product.price >= filters.min_price)
+
+        if not filters.include_out_of_stock:
+            query = query.where(Product.quantity > 0)
+
+        query = query.order_by(Product.price.asc(), Product.name.asc()).limit(capped_limit)
 
         result = await db.execute(query)
         return list(result.scalars().all())

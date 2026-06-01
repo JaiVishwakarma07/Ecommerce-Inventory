@@ -3,5 +3,8 @@
     "superpowers": {
       "enabled": true
     }
+  },
+  "terminal.integrated.env.windows": {
+    "Path": "${env:USERPROFILE}\\.local\\bin;${env:Path}"
   }
 }

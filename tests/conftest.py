@@ -20,7 +20,12 @@ if str(BACKEND_ROOT) not in sys.path:
 @pytest.fixture(autouse=True)
 def reset_user_repository():
     import app.database as database_module
-    from app.dependencies.rate_limit import login_rate_limiter, register_rate_limiter
+    from app.dependencies.rate_limit import (
+        assistant_rate_limiter,
+        login_rate_limiter,
+        register_rate_limiter,
+    )
+    from app.routers.assistant import reset_assistant_metrics
 
     restart_db = BACKEND_ROOT / "data" / "test-restart.db"
     if restart_db.exists():
@@ -30,6 +35,8 @@ def reset_user_repository():
     database_module._session_factory = None
     register_rate_limiter.reset()
     login_rate_limiter.reset()
+    assistant_rate_limiter.reset()
+    reset_assistant_metrics()
 
 
 @pytest.fixture(autouse=True)

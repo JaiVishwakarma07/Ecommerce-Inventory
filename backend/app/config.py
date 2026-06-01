@@ -1,12 +1,18 @@
-from pydantic import model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
+
+from pydantic import Field, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEFAULT_JWT_SECRET = "dev-secret-change-me"
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="ECOM_OPPO_", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="ECOM_OPPO_",
+        env_file=".env",
+        extra="ignore",
+        populate_by_name=True,
+    )
 
     app_env: str = "development"
     sqlite_dev_db_path: str = "./data/ecom_oppo.db"
@@ -19,6 +25,20 @@ class Settings(BaseSettings):
         "http://localhost:5173,http://127.0.0.1:5173,"
         "http://localhost:5174,http://127.0.0.1:5174"
     )
+    llm_api_key: str = Field(default="", validation_alias="LLM_API_KEY")
+    llm_base_url: str = Field(default="", validation_alias="LLM_BASE_URL")
+    llm_model: str = Field(
+        default="llama-3.3-70b-versatile",
+        validation_alias="LLM_MODEL",
+    )
+    llm_timeout_seconds: int = Field(
+        default=15,
+        validation_alias="LLM_TIMEOUT_SECONDS",
+    )
+
+    @property
+    def llm_configured(self) -> bool:
+        return bool(self.llm_api_key.strip() and self.llm_base_url.strip())
 
     @property
     def cors_origin_list(self) -> list[str]:

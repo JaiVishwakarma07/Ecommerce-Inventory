@@ -88,3 +88,17 @@ async def test_patch_order_status_requires_authentication():
         )
 
     assert response.status_code == 401
+
+
+@pytest.mark.anyio
+async def test_post_assistant_query_requires_authentication():
+    from app.main import app
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.post(
+            "/assistant/query",
+            json={"query": "laptop"},
+        )
+
+    assert response.status_code == 401

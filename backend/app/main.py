@@ -10,6 +10,7 @@ from app.routers.auth import login_router as auth_login_router
 from app.routers.auth import me_router as auth_me_router
 from app.routers.auth import router as auth_router
 from app.routers.auth import versioned_router as versioned_auth_router
+from app.routers.assistant import router as assistant_router
 from app.routers.orders import router as orders_router
 from app.routers.products import router as products_router
 
@@ -53,3 +54,4 @@ app.include_router(auth_router, prefix="/api/v1/auth")
 app.include_router(versioned_auth_router, prefix="/api/v1/auth")
 app.include_router(products_router)
 app.include_router(orders_router)
+app.include_router(assistant_router)

@@ -7,6 +7,7 @@ Full-stack e-commerce inventory system: React/Vite storefront talking to a FastA
 - Authentication (`specs/user-authentication/`)
 - Product catalog & admin inventory (`specs/002-product-catalog/plan.md`)
 - Orders & checkout (`specs/003-orders-checkout/plan.md`)
+- AI shopping assistant (`specs/004-ai-shopping-assistant/plan.md`)
 
 ---
 
@@ -193,6 +194,24 @@ flowchart TD
     PREPO --> DB
     DB --> OREPO --> OS --> OR --> C
 ```
+
+#### Assistant flow (`POST /assistant/query`)
+
+Customer-only natural-language product discovery. Groq (OpenAI-compatible) extracts **filter JSON only**; products in the response always come from `ProductRepository.search_for_assistant` (max 5, in-stock default).
+
+```mermaid
+flowchart TD
+    C[Client] -->|POST /assistant/query| AR[Assistant Router<br/>backend/app/routers/assistant.py]
+    AR --> RC[require_customer]
+    AR --> RL[Rate limit 10/min per user]
+    AR --> ASVC[AssistantService]
+    ASVC --> LLM[AssistantLlmClient<br/>backend/app/clients/llm_client.py]
+    ASVC --> PREPO[ProductRepository.search_for_assistant]
+    PREPO --> DB[(Database)]
+    DB --> PREPO --> ASVC --> AR --> C
+```
+
+**Environment variables:** `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL` (optional `LLM_TIMEOUT_SECONDS`, default 15). Not prefixed with `ECOM_OPPO_`.
 
 ### Backend layout
 
